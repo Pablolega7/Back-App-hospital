@@ -7,11 +7,12 @@ const { generarJWT } = require('../helpers/jwt');
 const getUsuarios = async(req, res) => {
 
     const desde= Number(req.query.desde) || 0;
-    console.log(desde)
 
-    const usuarios = await Usuario.find({}, 'nombre email role google img').skip(desde).limit(5);
+    const [usuarios,total] = await Promise.all([
+        Usuario.find({},'nombre email role google img').skip(desde).limit(5),
 
-    const total= await Usuario.countDocuments();
+        Usuario.countDocuments()
+    ]);
 
     res.json({
         ok: true,
@@ -91,8 +92,16 @@ const actualizarUsuario = async (req, res = response) => {
                 });
             };
         };
+
+        if (!usuarioDB.google) {
+            campos.email = email;
+        }else if(usuarioDB.email !== email){
+            return res.status(400).json({
+                ok:false,
+                msg:'Usuarios de Google No Pueden Cambiar Su Correo'
+            });
+        };
         
-        campos.email = email;
         const usuarioActualizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true } );
 
         res.json({

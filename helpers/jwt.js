@@ -18,13 +18,10 @@ const generarJWT = ( uid ) => {
             } else {
                 resolve( token );
             }
-    
         });
-
     });
-
-}
+};
 
 module.exports = {
     generarJWT
-}
+};

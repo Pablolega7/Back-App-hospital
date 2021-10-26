@@ -34,5 +34,4 @@ router.delete( '/:id',
     borrarHospitales
 );
 
-
 module.exports=router;

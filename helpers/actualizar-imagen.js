@@ -57,7 +57,6 @@ const actualizarimagen= async (tipo,id,nombreArchivo)=>{
              return true;
             break;
     };
-
 };
 
 module.exports={
