@@ -22,7 +22,7 @@ const MedicosSchema = Schema({
     },
 });
 
- MedicosSchema.method('toJSON', function() {
+ MedicosSchema.method( 'toJSON', function() {
     const { __v, ...object } = this.toObject();
     return object;
  });

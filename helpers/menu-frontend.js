@@ -1,7 +1,7 @@
 
- const getMenuFrontEnd=(role='USER_ROLE')=>{
+ const getMenuFrontEnd = ( role='USER_ROLE' ) => {
 
-    const menu= [
+    const menu = [
         {
           titulo: 'Dashboard',
           icono: 'mdi mdi-gauge',
@@ -25,13 +25,13 @@
         },
       ];
 
-      if (role==='ADMIN_ROLE') {
-          menu[1].submenu.unshift({ titulo: 'Usuarios', url: 'usuarios' })
+      if ( role === 'ADMIN_ROLE' ) {
+          menu[ 1 ].submenu.unshift({ titulo: 'Usuarios', url: 'usuarios' })
       };
 
       return menu;
 };
 
-module.exports={
+module.exports = {
     getMenuFrontEnd
 };

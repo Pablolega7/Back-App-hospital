@@ -1,97 +1,97 @@
-const {response}= require ('express');
+const {response} = require ('express');
 const { v4: uuidv4 } = require('uuid');
 const { actualizarimagen } = require('../helpers/actualizar-imagen');
-const path= require ('path');
-const fs= require ('fs');
+const path = require ('path');
+const fs = require ('fs');
 
 
-const fileUpload= (req,res=response)=>{
+const fileUpload = ( req, res = response ) => {
 
-    const tipo=req.params.tipo;
-    const id=req.params.id;
+    const tipo = req.params.tipo;
+    const id = req.params.id;
     
      //Validar Tipo
-    const tiposPermitidos=['hospitales','medicos','usuarios'];
+    const tiposPermitidos = [ 'hospitales', 'medicos', 'usuarios' ];
 
-    if (!tiposPermitidos.includes(tipo)) {
+    if ( !tiposPermitidos.includes( tipo ) ) {
 
-        res.status(400).json({
-            ok:false,
-            msg:'NO es un medico,hospital,usuario'
+        res.status( 400 ).json({
+            ok: false,
+            msg: 'NO es un medico,hospital,usuario'
         });
     };
 
       //Validar que Exista un Archivo
-    if (!req.files || Object.keys(req.files).length === 0) {
+    if ( !req.files || Object.keys( req.files ).length === 0) {
 
-        return res.status(400).json({
-            ok:false,
-            msg:'No hay ningun Archivo'
+        return res.status( 400 ).json({
+            ok: false,
+            msg: 'No hay ningun Archivo'
         });
     };
 
     //Procesar la Imagen
-    const file=req.files.imagen;
+    const file = req.files.imagen;
     
-    const nombreCortado=file.name.split('.');
-    const extensionArchivo=nombreCortado[nombreCortado.length -1];
+    const nombreCortado = file.name.split( '.' );
+    const extensionArchivo=nombreCortado[ nombreCortado.length -1 ];
 
     //Validar Extension
-    const extensionesValidas=['jpg','png','gif','jpeg'];
+    const extensionesValidas = [ 'jpg', 'png', 'gif', 'jpeg' ];
 
-    if (!extensionesValidas.includes(extensionArchivo)) {
+    if ( !extensionesValidas.includes( extensionArchivo ) ) {
 
-        return res.status(400).json({
-            ok:false,
-            msg:'No es una Extension Permitida'
+        return res.status( 400 ).json({
+            ok: false,
+            msg: 'No es una Extension Permitida'
         });
     };
 
     //Generar nombre del Archivo
-    const nombreArchivo=`${uuidv4()}.${extensionArchivo}`;
+    const nombreArchivo = `${uuidv4()}.${extensionArchivo}`;
 
     //Path para guardar la Imagen
-    const path=`./uploads/${tipo}/${nombreArchivo}`;
+    const path = `./uploads/${tipo}/${nombreArchivo}`;
 
     //Mover la Imagen
-     file.mv(path,(err)=> {
+     file.mv( path, ( err ) => {
 
-        if (err){
-            console.log(err);
-            return res.status(500).json({
-            ok:false,
-            msg:'Error al mover la Imagen'
+        if ( err ){
+            console.log( err );
+            return res.status( 500 ).json({
+            ok: false,
+            msg: 'Error al mover la Imagen'
         });
     };
 
         //Actualizar Base de Datos
-        actualizarimagen(tipo,id,nombreArchivo);
+        actualizarimagen( tipo, id, nombreArchivo );
 
         res.json({
-        ok:true,
-        msg:'Archivo Subido',
+        ok: true,
+        msg: 'Archivo Subido',
         nombreArchivo
     });
   });  
 };
 
-const retornaImagen= async(req,res=response)=>{
+const retornaImagen = async( req, res = response ) => {
 
-    const tipo=req.params.tipo;
-    const foto=req.params.foto;
+    const tipo = req.params.tipo;
+    const foto = req.params.foto;
 
-    const pathImg=path.join(__dirname,`../uploads/${tipo}/${foto}`);
+    const pathImg = path.join( __dirname, `../uploads/${tipo}/${foto}` );
 
     //imagen por Defecto
-    if (fs.existsSync(pathImg)) {
-        res.sendFile(pathImg);
+    if ( fs.existsSync( pathImg ) ) {
+        res.sendFile( pathImg );
     }else{
-        const pathImg=path.join(__dirname,`../uploads/no-img.png`);
-        res.sendFile(pathImg);
+        const pathImg = path.join( __dirname, `../uploads/no-img.png` );
+        res.sendFile( pathImg );
     };
 };
 
-module.exports={
+module.exports = {
     fileUpload,
     retornaImagen
 };

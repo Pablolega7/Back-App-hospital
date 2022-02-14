@@ -6,7 +6,7 @@ const { googleverify } = require('../helpers/google-verify');
 const { findById } = require('../models/usuario');
 const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 
-const login = async( req, res = response ) => {
+const login = async ( req, res = response ) => {
 
     const { email, password } = req.body;
 
@@ -16,7 +16,7 @@ const login = async( req, res = response ) => {
         const usuarioDB = await Usuario.findOne({ email });
 
         if ( !usuarioDB ) {
-            return res.status(404).json({
+            return res.status( 404 ).json({
                 ok: false,
                 msg: 'Email no encontrado'
             });
@@ -25,7 +25,7 @@ const login = async( req, res = response ) => {
         // Verificar contraseña
         const validPassword = bcrypt.compareSync( password, usuarioDB.password );
         if ( !validPassword ) {
-            return res.status(400).json({
+            return res.status( 400 ).json({
                 ok: false,
                 msg: 'Contraseña no válida'
             });
@@ -37,43 +37,43 @@ const login = async( req, res = response ) => {
         res.json({
             ok: true,
             token,
-            menu:getMenuFrontEnd(usuarioDB.role)
+            menu:getMenuFrontEnd( usuarioDB.role )
         });
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
+    } catch ( error ) {
+        console.log( error );
+        res.status( 500 ).json({
             ok: false,
             msg: 'Hable con el administrador'
         });
     };
 };
 
-const googleSignIn= async (req,res=response)=>{
+const googleSignIn = async ( req, res = response ) => {
 
-    const googleTOken= req.body.token;
+    const googleTOken = req.body.token;
 
     try {
 
-        const {name,email,picture}=await googleverify(googleTOken);
+        const { name, email, picture } = await googleverify( googleTOken );
 
-        const usuarioDB= await Usuario.findOne({email});
+        const usuarioDB = await Usuario.findOne({ email });
         let usuario;
 
-        if (!usuarioDB) {
+        if ( !usuarioDB ) {
             //Si el Usuario no Existe
-            usuario= new Usuario({
-                nombre:name,
+            usuario = new Usuario({
+                nombre: name,
                 email,
                 password:'',
-                img:picture,
-                google:true,
+                img: picture,
+                google: true,
                 fb: false
             });
-        }else{
+        } else{
             //Si existe el Usuario
-            usuario=usuarioDB;
-            usuario.google=true;
+            usuario = usuarioDB;
+            usuario.google = true;
         };
 
         //Guardar en Base de datos
@@ -84,34 +84,34 @@ const googleSignIn= async (req,res=response)=>{
 
 
         res.json({
-            ok:true,
+            ok: true,
             token,
-            menu:getMenuFrontEnd(usuario.role)
+            menu: getMenuFrontEnd( usuario.role )
         });
         
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({
-            ok:false,
-            msg:'Token no es Correcto'
+    } catch ( error ) {
+        console.log( error );
+        res.status( 401 ).json({
+            ok: false,
+            msg: 'Token no es Correcto'
         });
     };
 };
 
-const renewToken= async(req,res=response)=>{
+const renewToken = async( req, res = response ) => {
 
-    const uid=req.uid
+    const uid = req.uid
 
      //Generar JWT
      const token = await generarJWT( uid );
 
-     const usuario= await Usuario.findById(uid);
+     const usuario = await Usuario.findById( uid );
 
     res.json({
-        ok:true,
+        ok: true,
         usuario,
         token,
-        menu:getMenuFrontEnd(usuario.role)
+        menu: getMenuFrontEnd( usuario.role )
     });
 };
 
